@@ -43,7 +43,7 @@ serial_write_space:
 ;;; Writes a space to the serial port.
 	push ACC
 	mov a, #0x20
-	lcall serial_send
+	lcall serial_write
 	pop ACC
 	ret
 
