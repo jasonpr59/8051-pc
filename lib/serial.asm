@@ -60,5 +60,32 @@ serial_write_crlf:
 	pop ACC
 	ret
 
+serial_read_ascii_byte:
+;;; Read two hexidecimal ascii characters, convert them to a byte.
+	lcall serial_read
+	lcall ascii_to_nibble
+	swap a
+	mov b, a
+	lcall serial_read
+	lcall ascii_to_nibble
+	add a, b
+
+ascii_to_nibble:
+;;; Convert an ascii byte to a nibble in [0, 15]
+	;; TODO(jasonpr): Do not trust input!
+	jb acc.4, atn_zero_to_nine
+	jb acc.6, atn_lower
+	;; It must be an uppercase letter.
+	sjmp atn_upper
+atn_zero_to_nine:
+	add a, #0xd0
+	ret
+atn_lower:
+	add a, #0xc9
+	ret
+atn_upper:
+	add a, #0xa9
+	ret
+
 ;;; END SERIAL LIBRARY
 #endif
