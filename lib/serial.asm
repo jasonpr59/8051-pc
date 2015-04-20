@@ -28,5 +28,37 @@ serial_write_loop:
 	jnb TI, serial_write_loop
 	ret
 
+
+serial_print:
+;;; Print the null-terminated string to which DPTR points.
+;;; Clobbers: ACC, DPTR.
+	movx a, @dptr
+	jz serial_print_done
+	lcall serial_write
+	sjmp serial_print
+serial_print_done:
+	ret
+
+serial_write_space:
+;;; Writes a space to the serial port.
+	push ACC
+	mov a, #0x20
+	lcall serial_send
+	pop ACC
+	ret
+
+serial_write_crlf:
+;;; Writes a CRLF to the serial port.
+	push ACC
+
+	mov a, #0x0D 		; CR
+	lcall serial_write
+
+	mov a, #0x0A 		; LF
+	lcall serial_write
+
+	pop ACC
+	ret
+
 ;;; END SERIAL LIBRARY
 #endif
