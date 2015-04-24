@@ -33,6 +33,7 @@ serial_print:
 ;;; Print the null-terminated string to which DPTR points.
 ;;; Clobbers: ACC, DPTR.
 	movx a, @dptr
+	inc dptr
 	jz serial_print_done
 	lcall serial_write
 	sjmp serial_print
