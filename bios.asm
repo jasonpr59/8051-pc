@@ -8,11 +8,11 @@
 .EQU SERIAL_LOAD_SUCCESS, 0x00
 .EQU SERIAL_LOAD_ERROR, 0xFF
 
-.org 0x0000
+.org 0x8000
 	ljmp bootloader_loader
 
 ;; Addresses 0x0003 to 0x0030 are reserved for interrupt vectors.
-.org 0x0030
+.org 0x8030
 bootloader_loader:
 	;; If P1.0 is set, load the boot loader from disk.
 	;; If P1.0 is cleared, load code over serial.
@@ -84,10 +84,11 @@ serial_load_hex_record:
 
 	;; Get record type.
 	lcall serial_read_ascii_byte_checksummed
-	mov a, r2
+	mov r2, a
 
-	mov a, r1
-	jz serial_verify_checksum
+	;; If the record is not data (0), assume it's EOF and we're done.
+	mov a, r2
+	jnz serial_verify_checksum
 
 	;; Read each byte of the program into memory.
 serial_load_payload_loop:
@@ -99,6 +100,7 @@ serial_load_payload_loop:
 serial_verify_checksum:
 	lcall serial_read_ascii_byte_checksummed
 	;; If the checksum brings us to zero,
+	mov a, r0
 	jz serial_verify_successful
 serial_record_error:
 	mov a, #HEX_LOAD_ERROR
