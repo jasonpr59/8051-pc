@@ -14,9 +14,6 @@
 ;; Addresses 0x0003 to 0x0030 are reserved for interrupt vectors.
 .org 0x8030
 bootloader_loader:
-	;; If P1.0 is set, load the boot loader from disk.
-	;; If P1.0 is cleared, load code over serial.
-	jb P1.0, disk_load
 serial_load:
 	lcall serial_init
 	lcall serial_load_hex
