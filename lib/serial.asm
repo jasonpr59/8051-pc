@@ -71,6 +71,7 @@ serial_read_ascii_byte:
 	lcall ascii_to_nibble
 	add a, b
 
+	ret
 ascii_to_nibble:
 ;;; Convert an ascii byte to a nibble in [0, 15]
 	;; TODO(jasonpr): Do not trust input!
