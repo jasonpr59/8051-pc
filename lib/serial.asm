@@ -74,19 +74,47 @@ serial_read_ascii_byte:
 	ret
 ascii_to_nibble:
 ;;; Convert an ascii byte to a nibble in [0, 15]
-	;; TODO(jasonpr): Do not trust input!
-	jb acc.4, atn_zero_to_nine
-	jb acc.6, atn_lower
-	;; It must be an uppercase letter.
-	sjmp atn_upper
+	;; Save ACC.
+	mov b, a
+
+	clr C
+	subb a, #0x30
+	mov a, b
+	jc atn_out_of_range
+
+	subb a, #0x3A
+	mov a, b
+	jc atn_zero_to_nine
+
+	subb a, #0x41
+	mov a, b
+	jc atn_out_of_range
+
+	subb a, #0x47
+	mov a, b
+	jc atn_upper
+
+	subb a, #0x61
+	mov a, b
+	jc atn_out_of_range
+
+	subb a, #0x67
+	mov a, b
+	jc atn_lower
+
+	sjmp atn_out_of_range
+
 atn_zero_to_nine:
 	add a, #0xd0
 	ret
-atn_lower:
+atn_upper:
 	add a, #0xc9
 	ret
-atn_upper:
+atn_lower:
 	add a, #0xa9
+	ret
+atn_out_of_range:
+	mov a, #0xFF
 	ret
 
 serial_write_byte:
