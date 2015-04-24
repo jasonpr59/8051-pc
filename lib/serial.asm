@@ -89,5 +89,27 @@ atn_upper:
 	add a, #0xa9
 	ret
 
+serial_write_byte:
+;;; Writes a byte as a 2-digit hex number in ASCII.
+	push ACC
+	swap a
+	anl a, #0x0F
+	lcall nibble_to_ascii_hex
+	lcall serial_write
+	pop ACC
+	push ACC
+	anl a, #0x0F
+	lcall nibble_to_ascii_hex
+	lcall serial_write
+	pop ACC
+	ret
+
+nibble_to_ascii_hex:
+;;; Given a value in [0x0, 0xF] in ACC, write it over serial as an ASCII hex digit.
+	inc a
+	movc a, @a+pc
+	ret
+	.db "0123456789ABCDEF"
+
 ;;; END SERIAL LIBRARY
 #endif
