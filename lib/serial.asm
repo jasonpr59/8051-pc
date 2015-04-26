@@ -66,9 +66,13 @@ serial_read_ascii_byte:
 	lcall serial_read
 	lcall ascii_to_nibble
 	swap a
-	mov b, a
+	push ACC
+
 	lcall serial_read
 	lcall ascii_to_nibble
+
+	mov b, a
+	pop ACC
 	add a, b
 
 	ret
