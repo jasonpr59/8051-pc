@@ -151,6 +151,8 @@ disk_load_binary:
 	;; TODO(jasonpr): Implement.
 	ret
 
-#include <address-space.asm>
 #include <disk.asm>
 #include <serial.asm>
+
+;;; Must be included last, as not to affect the position of any generated code.
+#include <address-space.asm>
