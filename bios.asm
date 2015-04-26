@@ -32,25 +32,27 @@ serial_load_hex:
 	lcall serial_write_crlf
 serial_load_loop:
 	lcall serial_load_hex_record
-
-	mov b, a 		; Save return value.
-
+	push acc	; Save return value
 	;; If record type was EOF, then we arere done.
 	xrl a, #HEX_RECORD_EOF
 	jz serial_load_done
 
-	mov a, b		; Recall the return value.
+	pop acc 		; Recover the return value.
+	push acc
 	;; If there was an error reading the record, then report it.
 	xrl a, #HEX_LOAD_ERROR
 	jz serial_load_error_exit
 
+	pop acc
 	;; Otherwise, laod the next record.
 	sjmp serial_load_loop
 
 serial_load_done:
+	pop acc 		; Clean up the stack.
 	mov a, #SERIAL_LOAD_SUCCESS
 	ret
 serial_load_error_exit:
+	pop acc 		; Clean up the stack.
 	mov a, #SERIAL_LOAD_ERROR
 	ret
 
