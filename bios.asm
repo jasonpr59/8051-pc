@@ -16,7 +16,19 @@
 bootloader_loader:
 serial_load:
 	lcall serial_init
+remove_me_load:
 	lcall serial_load_hex
+	xrl a, SERIAL_LOAD_SUCCESS
+	jz bll_serial_success
+bll_serial_fail:
+	mov dptr, #serial_fail_message
+	lcall serial_print
+	lcall serial_write_crlf
+	sjmp remove_me_load
+bll_serial_success:
+	mov dptr, #serial_success_message
+	lcall serial_print
+	lcall serial_write_crlf
 	ljmp bootloader 	; External label.
 disk_load:
 	lcall disk_init
@@ -59,6 +71,11 @@ serial_load_error_exit:
 serial_message:
 	.DB "Awaiting HEX file...", 0
 
+serial_fail_message:
+	.DB "Failed to load HEX file.", 0
+
+serial_success_message:
+	.DB "Successfully loaded HEX file.", 0
 
 serial_load_hex_record:
 ;;; Load a single Intel HEX record over serial.
