@@ -94,6 +94,10 @@ get_start_code:
 	mov a, r2
 	jnz serial_verify_checksum
 
+	;; If the record has no data, jump straight to the checksum verification.
+	mov a, r1
+	jz serial_verify_checksum
+
 	;; Read each byte of the program into memory.
 serial_load_payload_loop:
 	lcall serial_read_ascii_byte_checksummed
