@@ -8,11 +8,11 @@
 .EQU SERIAL_LOAD_SUCCESS, 0x00
 .EQU SERIAL_LOAD_ERROR, 0xFF
 
-.org 0x8000
+.org 0x0000
 	ljmp bootloader_loader
 
 ;; Addresses 0x0003 to 0x0030 are reserved for interrupt vectors.
-.org 0x8030
+.org 0x0030
 bootloader_loader:
 serial_load:
 	lcall serial_init
