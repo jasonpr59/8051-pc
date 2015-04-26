@@ -63,10 +63,15 @@ serial_message:
 serial_load_hex_record:
 ;;; Load a single Intel HEX record over serial.
 ;;; Return the record type, or an error code, in ACC.
-	;; Consume ":", the start code.
+	;; Consume the start code, ":".
+get_start_code:
 	lcall serial_read
-	xrl a, #0x3A
-	jnz serial_record_error
+	xrl a, #':'
+	;; If this was not the start code, discard it and try the next character.
+	;; By looping until we get a start code, we make sure to skip any newline
+	;; characters... no matter how many there are!
+	;; TODO(jasonpr): Check that we only skip newlines!
+	jnz get_start_code
 
 	;; serial_read_ascii_byte_checksummed uses r0 for the checksum.
 	mov r0, #0
