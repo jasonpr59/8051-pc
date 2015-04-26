@@ -11,8 +11,8 @@
 .org 0x0000
 	ljmp bootloader_loader
 
-;; Addresses 0x0003 to 0x0030 are reserved for interrupt vectors.
-.org 0x0030
+;; Addresses 0x0003 to 0x0040 are reserved for interrupt vectors.
+.org 0x0040
 bootloader_loader:
 serial_load:
 	lcall serial_init
