@@ -154,5 +154,6 @@ disk_load_binary:
 #include <disk.asm>
 #include <serial.asm>
 
-;;; Must be included last, as not to affect the position of any generated code.
 #include <address-space.asm>
+.ORG BOOTLOADER_ADDR
+bootloader:
