@@ -29,6 +29,10 @@ diag_loop:
 	jz diag_spi_send
 	xrl a, #'S'
 
+	xrl a, #'C'
+	jz diag_sd_test
+	xrl a, #'C'
+
 diag_cleanup:
 	lcall serial_write_crlf
 	sjmp diag_loop
@@ -54,7 +58,36 @@ diag_write:
 
 diag_spi_send:
 	lcall serial_read_ascii_byte
+	lcall serial_write_byte
 	lcall spi_send_acc
+	ljmp diag_cleanup
+
+diag_sd_test:
+	;; Prepare to accept initial command.
+	setb SPI_SS_BAR
+	mov a, #99
+	lcall spi_wiggle_clock
+	clr SPI_SS_BAR
+
+	;; It is command #0, reset.
+	mov a, #0b01000000
+	lcall spi_send_acc
+
+	;; Its argument is 32-bit zero.
+	mov a, #0
+	lcall spi_send_acc
+	lcall spi_send_acc
+	lcall spi_send_acc
+	lcall spi_send_acc
+
+	;; Send the CRC and end bit.
+	mov a, #0x95
+	lcall spi_send_acc
+
+	;; Wait for a response.
+	mov a, #99
+	lcall spi_wiggle_clock
+
 	ljmp diag_cleanup
 
 diag_get_address:
