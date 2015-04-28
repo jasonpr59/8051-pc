@@ -28,8 +28,6 @@ spi_bit_ready:
 	nop
 	nop
 	clr SPI_CLK
-
-	setb SPI_MOSI 		; Return to "resting state."
 	ret
 
 spi_send_acc:
