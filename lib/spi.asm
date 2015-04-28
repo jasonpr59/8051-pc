@@ -32,11 +32,23 @@ spi_bit_ready:
 
 spi_send_acc:
 ;;; Send all eight bits in ACC over SPI.
-	mov r0, #8
-spi_send_acc_loop:
 	lcall spi_send_acc_msb
 	rl a
-	djnz r0, spi_send_acc_loop
+	lcall spi_send_acc_msb
+	rl a
+	lcall spi_send_acc_msb
+	rl a
+	lcall spi_send_acc_msb
+	rl a
+	lcall spi_send_acc_msb
+	rl a
+	lcall spi_send_acc_msb
+	rl a
+	lcall spi_send_acc_msb
+	rl a
+	lcall spi_send_acc_msb
+	rl a
+
 	ret
 
 spi_wiggle_clock:
