@@ -67,11 +67,23 @@ spi_bit_received:
 	ret
 
 spi_read_byte:
-	mov r0, #8
-spi_read_byte_loop:
+	;; It's ugly,  but it doesn't clobber any registers.
 	lcall spi_read_bit_acc_lsb
 	rl a
-	djnz r0, spi_read_byte_loop
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
 	ret
 
 ;;; END SPI LIBRARY
