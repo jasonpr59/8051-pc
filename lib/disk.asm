@@ -8,6 +8,7 @@
 .EQU DISK_RESP_3, 0x73
 .EQU DISK_RESP_4, 0x74
 
+.EQU DISK_IDLE_BIT, 0xE0	; ACC.0
 disk_init:
 	lcall spi_init
 
@@ -20,7 +21,7 @@ disk_init:
 	;; TODO(jasonpr): Check results!
 	lcall disk_cmd0
 	lcall disk_cmd8
-	lcall disk_send_op_cond
+	lcall disk_activate
 
 	ret
 
@@ -105,6 +106,17 @@ disk_send_command:
 	;; TODO(jasonpr): Cite evidence that this is right.
 	lcall spi_read_byte
 
+	ret
+
+disk_activate:
+;;; Send ACMD41 until the card exits the idle state.
+;;; (Could take hundreds of milliseconds!)
+	;; TODO(jasonpr): Add a timeout.
+	lcall disk_send_op_cond
+	mov a, DISK_RESP_0
+	jb DISK_IDLE_BIT, disk_activate
+
+	;; When we get here, the disk is no longer idle.
 	ret
 
 ;;; END DISK LIBRARY
