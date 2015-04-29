@@ -78,8 +78,33 @@ spi_bit_received:
 	clr SPI_CLK
 	ret
 
+spi_poll_byte:
+;;; Read a byte whose first bit is 0.
+;;; (As long as the first bit is 1, discard it.)
+	lcall spi_read_bit_acc_lsb
+	jb acc.0, spi_poll_byte
+	;; If we get here, proceed with the rest of the reading.
+	rl a
+
+	;; It's ugly, but it doesn't clobber registers (besides ACC).
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	rl a
+	lcall spi_read_bit_acc_lsb
+	ret
+
 spi_read_byte:
-	;; It's ugly,  but it doesn't clobber any registers.
+;;; Read a SPI byte.
+;;; Assumes the slave is ready to send data immediately.
 	lcall spi_read_bit_acc_lsb
 	rl a
 	lcall spi_read_bit_acc_lsb
@@ -95,7 +120,6 @@ spi_read_byte:
 	lcall spi_read_bit_acc_lsb
 	rl a
 	lcall spi_read_bit_acc_lsb
-	rl a
 	ret
 
 ;;; END SPI LIBRARY
