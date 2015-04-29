@@ -67,11 +67,9 @@ diag_spi_send:
 	ljmp diag_cleanup
 
 diag_sd_test:
-	lcall disk_init
-	lcall serial_write_byte
 	lcall serial_write_crlf
 
-	lcall disk_cmd8
+	lcall disk_init
 	mov a, DISK_RESP_0
 	lcall serial_write_byte
 	mov a, DISK_RESP_1
