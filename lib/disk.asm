@@ -91,7 +91,7 @@ disk_send_command:
 
 
 	;; Get response.
-	lcall spi_poll_byte
+	lcall disk_poll_response_byte
 	mov DISK_RESP_0, a
 	lcall spi_read_byte
 	mov DISK_RESP_1, a
@@ -117,6 +117,12 @@ disk_activate:
 	jb DISK_IDLE_BIT, disk_activate
 
 	;; When we get here, the disk is no longer idle.
+	ret
+
+disk_poll_response_byte:
+;;; Read a SPI byte that starts with zero.
+	lcall spi_read_byte
+	jb acc.7, disk_poll_response_byte
 	ret
 
 ;;; END DISK LIBRARY
