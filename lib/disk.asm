@@ -17,6 +17,15 @@ disk_init:
 	lcall spi_wiggle_clock
 	clr SPI_SS_BAR
 
+	;; TODO(jasonpr): Check results!
+	lcall disk_cmd0
+	lcall disk_cmd8
+	lcall disk_send_op_cond
+
+	ret
+
+
+disk_cmd0:
 	mov a, #0
 	mov r0, #0
 	mov r1, #0
@@ -24,9 +33,6 @@ disk_init:
 	mov r3, #0
 	mov r4, #0x95 		; CRC
 	lcall disk_send_command
-
-	mov a, DISK_RESP_0
-	ret
 
 disk_cmd8:
 	mov a, #8
