@@ -15,6 +15,7 @@ disk_init:
 	mov r1, #0
 	mov r2, #0
 	mov r3, #0
+	mov r4, #0x95 		; CRC
 	lcall disk_send_command
 
 	;; Wait for a response.
@@ -39,12 +40,12 @@ disk_send_command:
 	mov a, r3
 	lcall spi_send_acc
 
-	;; TODO(jasonpr): Calculate CRC.
-	;; For now, we hard code the CMD0 CRC.
-	mov a, #0x95
+	;; TODO(jasonpr): Calculate CRC so the client does not
+	;; need to hard-code it.
+	mov a, r4
 	lcall spi_send_acc
-
 	ret
+
 ;;; END DISK LIBRARY
 #endif
 
