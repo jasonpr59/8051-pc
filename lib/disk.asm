@@ -19,8 +19,7 @@ disk_init:
 	lcall disk_send_command
 
 	;; Wait for a response.
-	mov a, #99
-	lcall spi_wiggle_clock
+	lcall spi_poll_byte
 	;; TODO(jasonpr): Check response.
 
 	ret
