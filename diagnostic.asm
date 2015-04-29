@@ -72,17 +72,15 @@ diag_sd_test:
 	lcall serial_write_crlf
 
 	lcall disk_cmd8
-	lcall spi_poll_byte
+	mov a, DISK_RESP_0
 	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_1
 	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_2
 	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_3
 	lcall serial_write_byte
-	lcall spi_read_byte
-	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_4
 	lcall serial_write_byte
 
 	ljmp diag_cleanup
@@ -129,17 +127,15 @@ diag_sd_msg:
 	lcall disk_send_command
 
 	;; Get response.
-	lcall spi_poll_byte
+	mov a, DISK_RESP_0
 	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_1
 	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_2
 	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_3
 	lcall serial_write_byte
-	lcall spi_read_byte
-	lcall serial_write_byte
-	lcall spi_read_byte
+	mov a, DISK_RESP_4
 	lcall serial_write_byte
 
 	ljmp diag_cleanup

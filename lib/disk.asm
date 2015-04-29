@@ -1,6 +1,13 @@
 #ifndef MIT6115_JPR_DISK_H_
 #define MIT6115_JPR_DISK_H_
 ;;; BEGIN DISK LIBRARY
+
+.EQU DISK_RESP_0, 0x70
+.EQU DISK_RESP_1, 0x71
+.EQU DISK_RESP_2, 0x72
+.EQU DISK_RESP_3, 0x73
+.EQU DISK_RESP_4, 0x74
+
 disk_init:
 	lcall spi_init
 
@@ -18,9 +25,7 @@ disk_init:
 	mov r4, #0x95 		; CRC
 	lcall disk_send_command
 
-	;; Wait for a response.
-	lcall spi_poll_byte
-	;; TODO(jasonpr): Check response.
+	mov a, DISK_RESP_0
 	ret
 
 disk_cmd8:
@@ -53,6 +58,24 @@ disk_send_command:
 	;; need to hard-code it.
 	mov a, r4
 	lcall spi_send_acc
+
+
+	;; Get response.
+	lcall spi_poll_byte
+	mov DISK_RESP_0, a
+	lcall spi_read_byte
+	mov DISK_RESP_1, a
+	lcall spi_read_byte
+	mov DISK_RESP_2, a
+	lcall spi_read_byte
+	mov DISK_RESP_3, a
+	lcall spi_read_byte
+	mov DISK_RESP_4, a
+
+	;; Read one past the end, to give the chip some time.
+	;; TODO(jasonpr): Cite evidence that this is right.
+	lcall spi_read_byte
+
 	ret
 
 ;;; END DISK LIBRARY
