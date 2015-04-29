@@ -37,6 +37,9 @@ diag_loop:
 	jz diag_sd_msg_tramp
 	xrl a, #'M'
 
+	xrl a, #'B'
+	jz diag_sd_read_block_tramp
+	xrl a, #'B'
 diag_cleanup:
 	lcall serial_write_crlf
 	sjmp diag_loop
@@ -51,6 +54,8 @@ diag_sd_test_tramp:
 	ljmp diag_sd_test
 diag_sd_msg_tramp:
 	ljmp diag_sd_msg
+diag_sd_read_block_tramp:
+	ljmp diag_sd_read_block
 
 
 
@@ -150,6 +155,12 @@ diag_sd_msg:
 	lcall serial_write_byte
 
 	ljmp diag_cleanup
+
+diag_sd_read_block:
+	lcall serial_write_crlf
+	lcall disk_read_block
+	ljmp diag_cleanup
+
 diag_get_address:
 ;;; Read a 16-bit address over serial into dptr.
 ;;; Echo the received bytes.

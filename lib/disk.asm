@@ -119,6 +119,28 @@ disk_activate:
 	;; When we get here, the disk is no longer idle.
 	ret
 
+disk_read_block:
+	mov a, #17
+	;; TODO(jasonpr): Load a 32-bit block address.
+	mov r0, #0
+	mov r1, #0
+	mov r2, #0
+	mov r3, #0
+	mov r4, #0xC1 		; CRC
+	lcall disk_send_command
+
+	mov r0, #20
+
+	;; Wiggle for 765 bytes of data.
+	mov a, #255
+	lcall spi_wiggle_clock
+	mov a, #255
+	lcall spi_wiggle_clock
+	mov a, #255
+	lcall spi_wiggle_clock
+
+	ret
+
 disk_poll_response_byte:
 ;;; Read a SPI byte that starts with zero.
 	lcall spi_read_byte
