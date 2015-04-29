@@ -14,7 +14,7 @@ disk_init:
 
 	;; Set to SPI mode.
 	setb SPI_SS_BAR
-	mov a, #99
+	mov a, #10
 	lcall spi_wiggle_clock
 	clr SPI_SS_BAR
 

@@ -52,13 +52,13 @@ spi_send_acc:
 	ret
 
 spi_wiggle_clock:
-;;; Toggles the clock ACC times.
+;;; Toggles the clock for ACC bytes.
 ;;; Nukes ACC.
 ;;; Requires ACC > 0.
-	setb SPI_CLK
-	nop
-	nop
-	clr SPI_CLK
+	mov b, #16
+spi_half_wiggle:
+	cpl SPI_CLK
+	djnz b, spi_half_wiggle
 	;; DJNZ provides delay, so no NOPs.
 	djnz acc, spi_wiggle_clock
 
