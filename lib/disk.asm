@@ -37,6 +37,15 @@ disk_cmd8:
 	mov r4, #0x87		; CRC
 	lcall disk_send_command
 
+disk_begin_app_cmd:
+;;; Send CMD55 (the prefix for ACMDs).
+	mov a, #55
+	mov r0, #0
+	mov r1, #0
+	mov r2, #0
+	mov r3, #0
+	mov r4, #0xF1
+	lcall disk_send_command
 	ret
 
 disk_send_command:
