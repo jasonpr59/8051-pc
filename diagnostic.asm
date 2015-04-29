@@ -18,28 +18,41 @@ diag_loop:
 	lcall serial_write
 
 	xrl a, #'R'
-	jz diag_read
+	jz diag_read_tramp
 	xrl a, #'R'
 
 	xrl a, #'W'
-	jz diag_write
+	jz diag_write_tramp
 	xrl a, #'W'
 
 	xrl a, #'S'
-	jz diag_spi_send
+	jz diag_spi_send_tramp
 	xrl a, #'S'
 
 	xrl a, #'C'
-	jz diag_sd_test
+	jz diag_sd_test_tramp
 	xrl a, #'C'
 
 	xrl a, #'M'
-	jz diag_sd_msg
+	jz diag_sd_msg_tramp
 	xrl a, #'M'
 
 diag_cleanup:
 	lcall serial_write_crlf
 	sjmp diag_loop
+
+diag_read_tramp:
+	ljmp diag_read
+diag_write_tramp:
+	ljmp diag_write
+diag_spi_send_tramp:
+	ljmp diag_spi_send
+diag_sd_test_tramp:
+	ljmp diag_sd_test
+diag_sd_msg_tramp:
+	ljmp diag_sd_msg
+
+
 
 
 diag_read:
