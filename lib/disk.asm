@@ -21,6 +21,16 @@ disk_init:
 	;; Wait for a response.
 	lcall spi_poll_byte
 	;; TODO(jasonpr): Check response.
+	ret
+
+disk_cmd8:
+	mov a, #8
+	mov r0, #0
+	mov r1, #0
+	mov r2, #1
+	mov r3, #0xAA
+	mov r4, #0x87		; CRC
+	lcall disk_send_command
 
 	ret
 
