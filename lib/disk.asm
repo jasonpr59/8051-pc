@@ -70,6 +70,8 @@ disk_begin_app_cmd:
 	ret
 
 disk_send_command:
+	push acc
+
 	;; Send command number, with start bits.
 	orl a, #0b01000000
 	lcall spi_send_acc
@@ -93,6 +95,17 @@ disk_send_command:
 	;; Get response.
 	lcall disk_poll_response_byte
 	mov DISK_RESP_0, a
+
+	;; If CMD8 or CMD58, get the rest of the response (four more
+	;; bytes).
+	pop acc
+	xrl a, #8
+	jz read_remaining_response
+	xrl a, #0x32 		; Un-XOR with 8, then XOR with 58
+	jz read_remaining_response
+	sjmp read_response_end
+
+read_remaining_response:
 	lcall spi_read_byte
 	mov DISK_RESP_1, a
 	lcall spi_read_byte
@@ -102,6 +115,7 @@ disk_send_command:
 	lcall spi_read_byte
 	mov DISK_RESP_4, a
 
+read_response_end:
 	;; Read one past the end, to give the chip some time.
 	;; TODO(jasonpr): Cite evidence that this is right.
 	lcall spi_read_byte
