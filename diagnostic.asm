@@ -40,6 +40,11 @@ diag_loop:
 	xrl a, #'B'
 	jz diag_sd_read_block_tramp
 	xrl a, #'B'
+
+	xrl a, #'P'
+	jz diag_print_mem_page_tramp
+	xrl a, #'P'
+
 diag_cleanup:
 	lcall serial_write_crlf
 	sjmp diag_loop
@@ -56,6 +61,8 @@ diag_sd_msg_tramp:
 	ljmp diag_sd_msg
 diag_sd_read_block_tramp:
 	ljmp diag_sd_read_block
+diag_print_mem_page_tramp:
+	ljmp diag_print_mem_page
 
 
 
@@ -159,6 +166,29 @@ diag_sd_msg:
 diag_sd_read_block:
 	lcall serial_write_crlf
 	lcall disk_read_block
+	ljmp diag_cleanup
+
+diag_print_mem_page:
+	lcall serial_read_ascii_byte
+	mov dph, a
+	mov dpl, #0
+	lcall serial_write_byte
+	lcall serial_write_crlf
+
+	mov r0, #0
+diag_print_page_loop:
+;; Print a newline before every 16 bytes.
+	mov a, r0
+	anl a, #0xF
+	jnz diag_print_no_newline
+	lcall serial_write_crlf
+diag_print_no_newline:
+	movx a, @dptr
+	lcall serial_write_byte
+	lcall serial_write_space
+	inc dptr
+	djnz r0, diag_print_page_loop
+
 	ljmp diag_cleanup
 
 diag_get_address:
