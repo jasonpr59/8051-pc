@@ -134,6 +134,9 @@ disk_activate:
 	ret
 
 disk_read_block:
+;;; Read the first block of the SD card (512 bytes) into memory
+;;; at [0xF000, 0xF1FF].
+	;; Send CMD17: Read Block.
 	mov a, #17
 	;; TODO(jasonpr): Load a 32-bit block address.
 	mov r0, #0
@@ -145,20 +148,37 @@ disk_read_block:
 
 	mov r0, #20
 
-	;; Wiggle for 765 bytes of data.
-	mov a, #255
-	lcall spi_wiggle_clock
-	mov a, #255
-	lcall spi_wiggle_clock
-	mov a, #255
-	lcall spi_wiggle_clock
+	lcall disk_poll_data_token
 
+	mov dptr, #0xF000
+	mov r0, #2
+	mov r1, #0
+disk_block_read_loop:
+	lcall spi_read_byte
+	movx @dptr, a
+	inc dptr
+	djnz r1, disk_block_read_loop
+	djnz r0, disk_block_read_loop
+
+	;; TODO(jasonpr): Verify checksum.
+	lcall spi_read_byte
+	lcall spi_read_byte
+
+	;; TODO(jasonpr): Do I need to read a padding byte?
 	ret
 
 disk_poll_response_byte:
 ;;; Read a SPI byte that starts with zero.
 	lcall spi_read_byte
 	jb acc.7, disk_poll_response_byte
+	ret
+
+disk_poll_data_token:
+;;; Read SPI bytes until we get 0xFE, the data token for
+;;; CMD17, CMD18, and CMD24.
+	lcall spi_read_byte
+	xrl a, #0xFE
+	jnz disk_poll_data_token
 	ret
 
 ;;; END DISK LIBRARY
