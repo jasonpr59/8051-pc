@@ -9,14 +9,12 @@ def main(argv):
     # TODO(jasonpr): Read these paramaters from argv.
     in_file = sys.stdin
     out_buffer = sys.stdout.buffer
-
-    # As usual, start is inclusive, end is exclusive.
     start_address = 0x8000
-    end_address = 0x10000
+    binary_length = 0x8000
 
     # Run conversion.
     program = hex_format.HexProgram(in_file)
-    binary = program.as_binary()[start_address:end_address]
+    binary = program.as_binary()[start_address:start_address + binary_length]
     out_buffer.write(binary)
 
 if __name__ == '__main__':
