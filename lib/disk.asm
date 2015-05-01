@@ -133,15 +133,11 @@ disk_activate:
 	ret
 
 disk_read_block:
-;;; Read the first block of the SD card (512 bytes) into memory
+;;; Read SD card block at [r0..r3] (512 bytes) into memory
 ;;; at [0xF000, 0xF1FF].
 	;; Send CMD17: Read Block.
 	mov a, #17
-	;; TODO(jasonpr): Load a 32-bit block address.
-	mov r0, #0
-	mov r1, #0
-	mov r2, #0
-	mov r3, #0
+	;; R0 through R3 were set by the caller.
 	lcall disk_send_command
 
 	mov r0, #20

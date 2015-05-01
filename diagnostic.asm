@@ -164,7 +164,20 @@ diag_sd_msg:
 	ljmp diag_cleanup
 
 diag_sd_read_block:
+	lcall serial_read_ascii_byte
+	mov r0, a
+	lcall serial_write_byte
+	lcall serial_read_ascii_byte
+	mov r1, a
+	lcall serial_write_byte
+	lcall serial_read_ascii_byte
+	mov r2, a
+	lcall serial_write_byte
+	lcall serial_read_ascii_byte
+	mov r3, a
+	lcall serial_write_byte
 	lcall serial_write_crlf
+
 	lcall disk_read_block
 	ljmp diag_cleanup
 
