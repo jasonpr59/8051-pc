@@ -132,15 +132,10 @@ diag_sd_msg:
 	lcall serial_read_ascii_byte
 	push acc
 	lcall serial_write_byte
-	lcall serial_read_ascii_byte
-	push acc
-	lcall serial_write_byte
 
 	lcall serial_write_crlf
 
 	;; Store args into registers
-	pop acc
-	mov r4, a
 	pop acc
 	mov r3, a
 	pop acc

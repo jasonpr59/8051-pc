@@ -32,7 +32,6 @@ disk_cmd0:
 	mov r1, #0
 	mov r2, #0
 	mov r3, #0
-	mov r4, #0x95 		; CRC
 	lcall disk_send_command
 
 disk_cmd8:
@@ -41,7 +40,6 @@ disk_cmd8:
 	mov r1, #0
 	mov r2, #1
 	mov r3, #0xAA
-	mov r4, #0x87		; CRC
 	lcall disk_send_command
 	ret
 
@@ -54,7 +52,6 @@ disk_send_op_cond:
 	mov r1, #0
 	mov r2, #0
 	mov r3, #0
-	mov r4, #0xE3
 	lcall disk_send_command
 	ret
 
@@ -65,7 +62,6 @@ disk_begin_app_cmd:
 	mov r1, #0
 	mov r2, #0
 	mov r3, #0
-	mov r4, #0xF1
 	lcall disk_send_command
 	ret
 
@@ -75,6 +71,11 @@ disk_send_command:
 	;; Send command number, with start bits.
 	orl a, #0b01000000
 	lcall spi_send_acc
+
+	;; At the moment, ACC and R0 through R3 contain the
+	;; values we are sending.  Compute the CRC!
+	lcall disk_calculate_crc
+	mov r4, a
 
 	;; Send data.
 	mov a, r0
@@ -86,11 +87,9 @@ disk_send_command:
 	mov a, r3
 	lcall spi_send_acc
 
-	;; TODO(jasonpr): Calculate CRC so the client does not
-	;; need to hard-code it.
+	;; Send the CRC we calculated above.
 	mov a, r4
 	lcall spi_send_acc
-
 
 	;; Get response.
 	lcall disk_poll_response_byte
@@ -143,7 +142,6 @@ disk_read_block:
 	mov r1, #0
 	mov r2, #0
 	mov r3, #0
-	mov r4, #0xC1 		; CRC
 	lcall disk_send_command
 
 	mov r0, #20
@@ -179,6 +177,28 @@ disk_poll_data_token:
 	lcall spi_read_byte
 	xrl a, #0xFE
 	jnz disk_poll_data_token
+	ret
+
+disk_calculate_crc:
+	;; Initaialize ACC to zero... but not before we pull the
+	;; byte out of it!
+	mov b, a
+	clr a
+	lcall crc_fold_byte
+
+	mov b, r0
+	lcall crc_fold_byte
+
+	mov b, r1
+	lcall crc_fold_byte
+
+	mov b, r2
+	lcall crc_fold_byte
+
+	mov b, r3
+	lcall crc_fold_byte
+
+	orl a, #0x01
 	ret
 
 ;;; END DISK LIBRARY
