@@ -1,6 +1,9 @@
 #ifndef MIT6115_JPR_CRC_H_
 #define MIT6115_JPR_CRC_H_
 ;;; BEGIN CRC LIBRARY
+;;; All CRCs in this library are the 7-bit SD card crc,
+;;; x^7 + x^3 + 1.
+
 crc_fold_bit:
 ;;; Given a CRC in ACC[7:1] and a next bit in C, fold the bit into the
 ;;; CRC.
