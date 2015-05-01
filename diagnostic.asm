@@ -45,6 +45,10 @@ diag_loop:
 	jz diag_print_mem_page_tramp
 	xrl a, #'P'
 
+	xrl a, #'Y'
+	jz diag_crc_tramp
+	xrl a, #'Y'
+
 diag_cleanup:
 	lcall serial_write_crlf
 	sjmp diag_loop
@@ -63,7 +67,8 @@ diag_sd_read_block_tramp:
 	ljmp diag_sd_read_block
 diag_print_mem_page_tramp:
 	ljmp diag_print_mem_page
-
+diag_crc_tramp:
+	ljmp diag_crc
 
 
 
@@ -191,6 +196,25 @@ diag_print_no_newline:
 
 	ljmp diag_cleanup
 
+diag_crc:
+	lcall serial_read_ascii_byte
+	mov r0, acc
+	lcall serial_write_byte
+
+	lcall serial_read_ascii_byte
+	mov r1, acc
+	lcall serial_write_byte
+	lcall serial_write_crlf
+
+	clr a
+	mov b, r0
+	lcall crc_fold_byte
+	mov b, r1
+	lcall crc_fold_byte
+
+	lcall serial_write_byte
+	ljmp diag_cleanup
+
 diag_get_address:
 ;;; Read a 16-bit address over serial into dptr.
 ;;; Echo the received bytes.
@@ -211,6 +235,7 @@ diag_get_address:
 diag_prompt:
 	.DB "diag> ", 0
 
+#include <crc.asm>
 #include <disk.asm>
 #include <serial.asm>
 #include <spi.asm>
