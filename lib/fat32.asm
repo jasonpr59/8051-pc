@@ -72,6 +72,30 @@ fat32_init:
 	lcall store_32bit_low 	; Store the sum.
 	ret
 
+fat32_cluster_start:
+;;; Get start sector number of the cluster in r[3:0].
+;;; Write the result into r[3:0], clobbering the input.
+	;; Do output_sector =
+	;; (input_cluster - 2) * SECTORS_PER_CLUSTER + CLUSTERS_START
+
+	;; Adding 0xFFFFFFFE is easier than subtracting 2.
+	mov r4, #0xFE
+	mov r5, 0xFF
+	mov r6, 0xFF
+	mov r7, 0xFF
+	lcall sum_32bit
+
+	mov dptr, #SECTORS_PER_CLUSTER
+	movx a, @dptr
+	mov r4, a
+	lcall mul_32by8bit
+
+	mov dptr, #CLUSTERS_START
+	lcall load_32bit_high
+	lcall sum_32bit
+
+	ret
+
 fat32_read_root_dir:
 	;; Calculate root dir sector.
 	;; Read sector.
