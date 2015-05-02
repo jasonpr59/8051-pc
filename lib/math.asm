@@ -2,7 +2,7 @@
 #define MIT6115_JPR_MATH_H_
 ;;; BEGIN MATH LIBRARY
 sum_32bit:
-;;; Does r[3:0] = r[3:0] + r[7:0], with MSB in high reg.
+;;; Does r[3:0] = r[3:0] + r[7:4], with MSB in high reg.
 	clr C
 
 	xch a, r0
