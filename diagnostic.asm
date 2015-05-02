@@ -53,6 +53,10 @@ diag_loop:
 	jz diag_arith_tramp
 	xrl a, #'A'
 
+	xrl a, #'F'
+	jz diag_fat_tramp
+	xrl a, #'F'
+
 diag_cleanup:
 	lcall serial_write_crlf
 	sjmp diag_loop
@@ -75,7 +79,8 @@ diag_crc_tramp:
 	ljmp diag_crc
 diag_arith_tramp:
 	ljmp diag_arith
-
+diag_fat_tramp:
+	ljmp diag_fat
 
 diag_read:
 	lcall diag_get_address
@@ -253,6 +258,12 @@ diag_arith:
 
 	ljmp diag_cleanup
 
+diag_fat:
+	lcall serial_write_crlf
+	lcall fat32_init
+	lcall serial_write_dword
+	ljmp diag_cleanup
+
 diag_get_address:
 ;;; Read a 16-bit address over serial into dptr.
 ;;; Echo the received bytes.
@@ -275,6 +286,7 @@ diag_prompt:
 
 #include <crc.asm>
 #include <disk.asm>
+#include <fat32.asm>
 #include <math.asm>
 #include <serial.asm>
 #include <spi.asm>
