@@ -136,6 +136,20 @@ serial_write_byte:
 	pop ACC
 	ret
 
+serial_write_dword:
+;;; Writes a 32-bit dword in r[3:0] as an 8-digit hex number in ASCII.
+	push ACC
+	mov a, r3
+	lcall serial_write_byte
+	mov a, r2
+	lcall serial_write_byte
+	mov a, r1
+	lcall serial_write_byte
+	mov a, r0
+	lcall serial_write_byte
+	pop ACC
+	ret
+
 nibble_to_ascii_hex:
 ;;; Given a value in [0x0, 0xF] in ACC, write it over serial as an ASCII hex digit.
 	inc a
