@@ -14,6 +14,8 @@
 ;; Addresses 0x0003 to 0x0040 are reserved for interrupt vectors.
 .org 0x0040
 bootloader_loader:
+	;; Either load via serial or from disk.
+	jb P1.0, disk_load
 serial_load:
 	lcall serial_init
 remove_me_load:
@@ -32,8 +34,12 @@ bll_serial_success:
 	ljmp bootloader 	; External label.
 disk_load:
 	lcall disk_init
-	lcall disk_load_binary
+	lcall fat32_init
+	mov dptr, #boot_file_name
+	lcall load_fat32_to_ram
 	ljmp bootloader		; External label.
+boot_file_name:
+	.db "BOOT    IMG", 0
 
 serial_load_hex:
 ;;; Get an Intel HEX file over serial and sets up the payload in
@@ -145,13 +151,9 @@ serial_read_ascii_byte_checksummed:
 	;; Return the byte.
 	ret
 
-disk_load_binary:
-;;; Load 512 bytes of data from the first sector of disk into memory
-;;; at the bootloader address.
-	;; TODO(jasonpr): Implement.
-	ret
-
 #include <disk.asm>
+#include <fat32.asm>
+#include <load.asm>
 #include <serial.asm>
 
 #include <address-space.asm>
