@@ -186,5 +186,27 @@ endian_swap:
 
 	ret
 
+inc_32bit_low:
+	push acc
+
+	mov a, r0
+	add a, #1
+	mov r0, a
+
+	mov a, r1
+	addc a, #0
+	mov r1, a
+
+	mov a, r2
+	addc a, #0
+	mov r2, a
+
+	mov a, r3
+	addc a, #0
+	mov r3, a
+
+	pop acc
+	ret
+
 ;;; END MATH LIBRARY
 #endif
