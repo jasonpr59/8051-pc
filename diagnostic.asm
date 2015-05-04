@@ -272,12 +272,11 @@ diag_fat:
 	lcall serial_write_byte	; Print success value.
 	lcall serial_write_crlf
 	lcall serial_write_dword ; Print cluster number.
-	;; TODO(jasonpr): Read the file!
 	lcall fat32_cluster_start
-	lcall disk_read_block
+	lcall fat32_read_sector
 	ljmp diag_cleanup
 boot_file_name:
-	.db "boot    img"
+	.db "HELLO   TXT", 0
 
 diag_get_address:
 ;;; Read a 16-bit address over serial into dptr.
