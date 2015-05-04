@@ -9,6 +9,8 @@
 .EQU DISK_RESP_4, 0x74
 
 .EQU DISK_IDLE_BIT, 0xE0	; ACC.0
+
+.EQU BLOCK_BUFFER, 0xF000
 disk_init:
 	lcall spi_init
 
@@ -144,7 +146,6 @@ disk_read_block:
 
 	lcall disk_poll_data_token
 
-	mov dptr, #0xF000
 	mov r0, #2
 	mov r1, #0
 disk_block_read_loop:

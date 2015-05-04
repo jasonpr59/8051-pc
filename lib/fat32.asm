@@ -20,6 +20,7 @@ fat32_init:
 	mov r2, #0
 	mov r1, #0
 	mov r0, #0
+	mov dptr, #BLOCK_BUFFER
 	lcall disk_read_block
 
 	;; Read volume ID.
@@ -27,6 +28,7 @@ fat32_init:
 	lcall load_32bit_low
 	mov dptr, #VOLUME_BEGIN
 	lcall store_32bit_low
+	mov dptr, #BLOCK_BUFFER
 	lcall fat32_read_sector
 
 	;; Calculate volume parameters.
@@ -106,6 +108,7 @@ fat32_read_root_dir:
 	mov dptr, #ROOT_SECTOR_INDEX
 	lcall load_32bit_low
 	lcall fat32_cluster_start
+	mov dptr, #BLOCK_BUFFER
 	lcall fat32_read_sector
 	;; TODO(jasonpr): Maybe save the cluster start so we can
 	;; access the FAT later.

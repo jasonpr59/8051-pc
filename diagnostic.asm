@@ -188,6 +188,7 @@ diag_sd_read_block:
 	lcall serial_write_byte
 	lcall serial_write_crlf
 
+	mov dptr, #BLOCK_BUFFER
 	lcall disk_read_block
 	ljmp diag_cleanup
 
@@ -273,6 +274,7 @@ diag_fat:
 	lcall serial_write_crlf
 	lcall serial_write_dword ; Print cluster number.
 	lcall fat32_cluster_start
+	mov dptr, #BLOCK_BUFFER
 	lcall fat32_read_sector
 	ljmp diag_cleanup
 boot_file_name:
