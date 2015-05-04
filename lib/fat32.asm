@@ -200,4 +200,5 @@ fat32_read_sector:
 #endif
 
 #include <instr.asm>
+#include <math.asm>
 #include <string.asm>

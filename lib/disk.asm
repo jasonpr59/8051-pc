@@ -205,4 +205,5 @@ disk_calculate_crc:
 ;;; END DISK LIBRARY
 #endif
 
+#include <crc.asm>
 #include <spi.asm>
