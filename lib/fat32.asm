@@ -27,9 +27,7 @@ fat32_init:
 	lcall load_32bit_low
 	mov dptr, #VOLUME_BEGIN
 	lcall store_32bit_low
-
-	lcall endian_swap
-	lcall disk_read_block
+	lcall fat32_read_sector
 
 	;; Calculate volume parameters.
 	;; Sectors per cluster
@@ -108,7 +106,7 @@ fat32_read_root_dir:
 	mov dptr, #ROOT_SECTOR_INDEX
 	lcall load_32bit_low
 	lcall fat32_cluster_start
-	lcall disk_read_block
+	lcall fat32_read_sector
 	;; TODO(jasonpr): Maybe save the cluster start so we can
 	;; access the FAT later.
 	ret
@@ -163,6 +161,35 @@ fat32_find_file_advance:
 fat32_get_file_location:
 ;;; Return the sector count.  Put the sector number at DPTR,
 ;;; MSB first.
+	ret
+
+fat32_read_sector:
+;;; Read the sector with the number in r[3:0].
+;;; This function exists mostly to bridge FAT endianness with
+;;; SD endianness.
+	;; Save r[3:0].
+	mov a, r0
+	push acc
+	mov a, r1
+	push acc
+	mov a, r2
+	push acc
+	mov a, r3
+	push acc
+
+	lcall endian_swap
+	lcall disk_read_block
+
+	;; Restore r[3:0].
+	pop acc
+	mov r3, a
+	pop acc
+	mov r2, a
+	pop acc
+	mov r1, a
+	pop acc
+	mov r0, a
+
 	ret
 
 ;;; END FAT32 LIBRARY
