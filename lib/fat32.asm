@@ -153,7 +153,7 @@ fat32_find_file_advance:
 	mov dpl, a
 	mov a, dph
 	addc a, #0
-	mov a, dph
+	mov dph, a
 	djnz r1, fat32_find_file_attempt
 	;; Done advancing, still haven't found file.
 	mov a, #0xFF 		; Failure code.
