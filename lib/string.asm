@@ -12,6 +12,10 @@ string_equal:
 	push acc
 	mov a, r6
 	push acc
+	mov a, r1
+	push acc
+	mov a, r0
+	push acc
 
 string_equal_loop:
 	movx a, @dptr
@@ -30,6 +34,10 @@ string_equal_loop:
 	;; TODO(jasonpr): Factor out code duplicated between here
 	;; and string_equal_false.
 	pop acc
+	mov r0, a
+	pop acc
+	mov r1, a
+	pop acc
 	mov r6, a
 	pop acc
 	mov r7, a
@@ -39,6 +47,10 @@ string_equal_loop:
 	ret
 
 string_equal_false:
+	pop acc
+	mov r0, a
+	pop acc
+	mov r1, a
 	pop acc
 	mov r6, a
 	pop acc
