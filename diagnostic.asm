@@ -261,8 +261,23 @@ diag_arith:
 diag_fat:
 	lcall serial_write_crlf
 	lcall fat32_init
-	lcall serial_write_dword
+	;; Read first sector of root dir into disk buffer.
+	;; This is a listing of 16 files or folders.
+	lcall fat32_read_root_dir
+	;; Find the file with the specified name.  Put its
+	;; cluster number into r[3:0].  Indicate success in ACC.
+	mov dptr, #boot_file_name
+	mov r0, #11 		; 8 chars for name + 3 for extension
+	lcall fat32_find_file_in_dir
+	lcall serial_write_byte	; Print success value.
+	lcall serial_write_crlf
+	lcall serial_write_dword ; Print cluster number.
+	;; TODO(jasonpr): Read the file!
+	lcall fat32_cluster_start
+	lcall disk_read_block
 	ljmp diag_cleanup
+boot_file_name:
+	.db "boot    img"
 
 diag_get_address:
 ;;; Read a 16-bit address over serial into dptr.
