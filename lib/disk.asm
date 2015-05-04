@@ -137,6 +137,8 @@ disk_activate:
 disk_read_block:
 ;;; Read SD card block at [r0..r3] (512 bytes) into memory
 ;;; at [0xF000, 0xF1FF].
+	push dph
+	push dpl
 	;; Send CMD17: Read Block.
 	mov a, #17
 	;; R0 through R3 were set by the caller.
@@ -160,6 +162,8 @@ disk_block_read_loop:
 	lcall spi_read_byte
 
 	;; TODO(jasonpr): Do I need to read a padding byte?
+	pop dpl
+	pop dph
 	ret
 
 disk_poll_response_byte:
