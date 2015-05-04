@@ -128,6 +128,7 @@ fat32_find_file_in_dir:
 	;; Let r1 contain the number of candidates left.
 	mov r1, #16
 fat32_find_file_attempt:
+	;; Check if the currently listing is for the target filename.
 	lcall string_equal
 	jz fat32_find_file_advance
 	;; We got it!  Find the cluster and return.
