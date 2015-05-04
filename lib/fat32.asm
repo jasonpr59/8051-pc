@@ -9,6 +9,11 @@
 .EQU ROOT_SECTOR_INDEX, 0xFF10
 .EQU CLUSTERS_START, 0xFF14
 
+.EQU ENTRY_CLUSTER_BYTE0_OFFSET, 26
+.EQU ENTRY_CLUSTER_BYTE1_OFFSET, 27
+.EQU ENTRY_CLUSTER_BYTE2_OFFSET, 20
+.EQU ENTRY_CLUSTER_BYTE3_OFFSET, 21
+
 fat32_init:
 	;; Read MBR.
 	mov r3, #0
@@ -108,6 +113,51 @@ fat32_read_root_dir:
 	;; access the FAT later.
 	ret
 
+fat32_find_file_in_dir:
+;;; Find the cluster number of the file that's in the currently
+;;; loaded sector.
+;;; Assumes the current sector is part of a directory listing,
+;;; and that this sector lists the named file.
+;;; The file name is passed in dptr.
+;;; The file name's length is passed in r0.
+;;; The 32-bit result goes in r[3:0].
+;;; Returns #0 for success, #0xFF for failure (in ACC).
+;;; TODO(jasonpr): Relax these crazy restrictions!
+	;; Let dptr76 have the target filename, and dptr
+	;; have the current candidate.
+	lcall swap_dptrs
+	mov dptr, #0xF000
+	;; Let r1 contain the number of candidates left.
+	mov r1, #16
+fat32_find_file_attempt:
+	lcall string_equal
+	jz fat32_find_file_advance
+	;; We got it!  Find the cluster and return.
+	;; dptr points at the entry.
+	mov a, #ENTRY_CLUSTER_BYTE0_OFFSET
+	movc a, @a + dptr
+	mov r0, a
+	mov a, #ENTRY_CLUSTER_BYTE1_OFFSET
+	movc a, @a + dptr
+	mov r1, a
+	mov a, #ENTRY_CLUSTER_BYTE2_OFFSET
+	movc a, @a + dptr
+	mov r2, a
+	mov a, #ENTRY_CLUSTER_BYTE3_OFFSET
+	movc a, @a + dptr
+	mov r3, a
+	mov a, #0		; Success!
+	ret
+fat32_find_file_advance:
+	mov a, dpl
+	add a, #0x20
+	mov dpl, a
+	mov a, dph
+	addc a, #0
+	mov a, dph
+	djnz r1, fat32_find_file_attempt
+	;; Done advancing, still haven't found file.
+	mov a, #0xFF 		; Failure code.
 	ret
 
 fat32_get_file_location:
@@ -117,3 +167,6 @@ fat32_get_file_location:
 
 ;;; END FAT32 LIBRARY
 #endif
+
+#include <instr.asm>
+#include <string.asm>
