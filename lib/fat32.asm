@@ -97,8 +97,17 @@ fat32_cluster_start:
 	ret
 
 fat32_read_root_dir:
+;;; Read the first sector of the root dir's fist cluster from disk.
 	;; Calculate root dir sector.
-	;; Read sector.
+	;; Read root sector.
+	mov dptr, #ROOT_SECTOR_INDEX
+	lcall load_32bit_low
+	lcall fat32_cluster_start
+	lcall disk_read_block
+	;; TODO(jasonpr): Maybe save the cluster start so we can
+	;; access the FAT later.
+	ret
+
 	ret
 
 fat32_get_file_location:
