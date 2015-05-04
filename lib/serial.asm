@@ -31,13 +31,20 @@ serial_write_loop:
 
 serial_print:
 ;;; Print the null-terminated string to which DPTR points.
-;;; Clobbers: ACC, DPTR.
+	push dph
+	push dpl
+	push acc
+serial_print_loop:
 	movx a, @dptr
 	inc dptr
 	jz serial_print_done
 	lcall serial_write
-	sjmp serial_print
+	sjmp serial_print_loop
+
 serial_print_done:
+	pop acc
+	pop dpl
+	pop dph
 	ret
 
 serial_write_space:
