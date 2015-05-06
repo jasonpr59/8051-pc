@@ -4,7 +4,7 @@
 ;;; job is to help us investigate the hardware without loading the OS.
 ;;; It functions much like MINMON did.
 
-.ORG BOOTLOADER_ADDR
+.ORG OS_ADDR
 diagnostic:
 	lcall serial_init
 	lcall spi_init

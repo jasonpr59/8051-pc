@@ -9,11 +9,11 @@
 .EQU SERIAL_LOAD_ERROR, 0xFF
 
 .org 0x0000
-	ljmp bootloader_loader
+	ljmp bootloader
 
 ;; Addresses 0x0003 to 0x0040 are reserved for interrupt vectors.
 .org 0x0040
-bootloader_loader:
+bootloader:
 	;; Either load via serial or from disk.
 	mov a, P1
 	jb acc.0, disk_load
@@ -32,13 +32,13 @@ bll_serial_success:
 	mov dptr, #serial_success_message
 	lcall serial_print
 	lcall serial_write_crlf
-	ljmp bootloader 	; External label.
+	ljmp os
 disk_load:
 	lcall disk_init
 	lcall fat32_init
 	mov dptr, #boot_file_name
 	lcall load_fat32_to_ram
-	ljmp bootloader		; External label.
+	ljmp os
 boot_file_name:
 	.db "BOOT    IMG", 0
 
@@ -158,5 +158,5 @@ serial_read_ascii_byte_checksummed:
 #include <serial.asm>
 
 #include <address-space.asm>
-.ORG BOOTLOADER_ADDR
-bootloader:
+.ORG OS_ADDR
+os:
