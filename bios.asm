@@ -15,7 +15,8 @@
 .org 0x0040
 bootloader_loader:
 	;; Either load via serial or from disk.
-	jb P1.0, disk_load
+	mov a, P1
+	jb acc.0, disk_load
 serial_load:
 	lcall serial_init
 remove_me_load:
