@@ -1,0 +1,36 @@
+Name     jasonpr ;
+PartNo   00 ;
+Date     4/22/2015 ;
+Revision 01 ;
+Designer jasonpr ;
+Company  MIT ;
+Assembly None ;
+Location  ;
+Device   g22v10 ;
+
+/* *************** INPUT PINS *********************/
+/* Strange order is for convenience of wiring. */
+PIN [1..8] = [A7..A0];
+PIN [9..11] = [A8..A10];
+PIN [14..18]   = [A15..A11];
+
+/* *************** OUTPUT PINS *********************/
+/* Note, outputs are active low. */
+PIN 22 = !VGA;
+PIN 21 = !MMIO;
+PIN 20 = !RAM;
+PIN 19 = !ROM;
+
+/***** SIMPLE VALUES *****/
+JMP = [A15..A0]:0000 # [A15..A0]:0001 # [A15..A0]:0002;
+VEC = !([A15..A6]:#);
+LOW8K = !([A15..A13]:#);
+MMIO = [A15..A8]:5F00;
+VGA = !A15 & A14 & A13; /* That is, [0x6000, 0x7FFF]. */
+PROG = A15; /* RAM program memory is at [0x8000, 0xFFFF]. */
+
+/****** DERIVED VALUES ****************/
+INT = VEC & !JMP;
+FIRM = LOW8K & !VEC;
+ROM = FIRM # JMP;
+RAM = INT # PROG;
