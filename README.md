@@ -1,2 +1,2 @@
 # 8051-pc
-A simple "operating system" for controlling an 8051-based personal computer.
+A bootloader for an 8051-based personal computer.
